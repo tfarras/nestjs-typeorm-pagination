@@ -21,7 +21,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "keywords": [
-    "nestjs"
+    "nestjs",
+    "typeorm",
+    "pagination",
+    "paginate",
+    "entity",
+    "query"
   ],
   "publishConfig": {
     "access": "public"
