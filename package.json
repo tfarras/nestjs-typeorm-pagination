@@ -1,6 +1,6 @@
 {
   "name": "@tfarras/nestjs-typeorm-pagination",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Extension for simple pagination of TypeORM entities",
   "author": "Taimoor Farras <farrastaimoor@gmail.com>",
   "readmeFilename": "README.md",
