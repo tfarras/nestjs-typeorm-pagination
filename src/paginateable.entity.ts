@@ -1,10 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntity, ObjectType, FindManyOptions } from 'typeorm';
+import { BaseEntity, ObjectType, FindManyOptions, In, Equal } from 'typeorm';
 import { PaginationParams } from './pagination.decorator';
 import { Pagination } from './pagination.interface';
 
 export abstract class PaginateableBaseEntity extends BaseEntity {
-
   /**
    * Finds entities that match given find options
    */
@@ -15,31 +14,55 @@ export abstract class PaginateableBaseEntity extends BaseEntity {
   ): Promise<Pagination<T>> {
     const entity = this as any;
     const {
-      _end,
+      _limit,
       _start,
       _order,
-      _sort,
+      _sortBy,
+      _filter,
     } = pg;
     let query = options;
-    const columnExists = entity.getRepository().metadata.findColumnWithPropertyPath(_sort);
+    const columnExists = entity.getRepository().metadata.findColumnWithPropertyPath(_sortBy);
 
-    if (_order && _sort && columnExists) {
+    if (_order && _sortBy && columnExists) {
       query = {
         ...query,
         order: {
-          [_sort]: _order,
+          [_sortBy]: _order,
         }
       }
     }
 
-    if (_start >= 0 && _end > _start) {
+    if (_start >= 0 && _limit > 0) {
       query = {
         ...query,
-        take: _end - _start,
+        take: _limit,
         skip: _start,
       }
     } else {
       throw new BadRequestException('Invalid pagination query!');
+    }
+
+    if (_filter) {
+      const toFilter = Object.entries(_filter).filter(([key]) =>
+        entity.getRepository().metadata.findColumnWithPropertyPath(key)
+      );
+      const filterQuery = {};
+
+      toFilter.forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          filterQuery[key] = In(value);
+        } else {
+          filterQuery[key] = Equal(value);
+        }
+      });
+
+      query = {
+        ...query,
+        where: {
+          ...query.where,
+          ...filterQuery,
+        }
+      }
     }
 
     const [data, total] = await entity.getRepository().findAndCount(query as any);

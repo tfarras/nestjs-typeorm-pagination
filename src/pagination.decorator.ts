@@ -1,24 +1,28 @@
 import { createParamDecorator } from '@nestjs/common';
+import { ObjectLiteral } from 'typeorm';
 
 export interface PaginationParams {
-  _end: number;
+  _limit: number;
   _start: number;
   _order?: 'ASC' | 'DESC' | 1 | -1;
-  _sort?: string;
+  _sortBy?: string;
+  _filter: ObjectLiteral;
 }
 
 export const PgParams = createParamDecorator((data, req): PaginationParams => {
   const {
-    _end,
+    _limit,
     _start,
     _order,
-    _sort,
+    _sortBy,
+    ..._filter
   } = req.query;
 
   return {
-    _end: +_end,
+    _limit: +_limit,
     _start: +_start,
     _order,
-    _sort,
+    _sortBy,
+    _filter,
   };
 });
