@@ -81,6 +81,17 @@ getMany(
 }
 ```
 
+You still have access to [TypeORM Find Options](https://github.com/typeorm/typeorm/blob/master/docs/find-options.md). Just pass them as the second parameter to the `findAndPaginate`
+
+Example: 
+```typescript
+UserEntity.findAndPaginate(pg, {
+  where: {
+    firstname: IsNull(),
+  },
+});
+```
+
 Example request:
 ```
 /user?_limit=11&_start=0&_sortBy=id&_order=DESC&id=1&id=2&email=farrastaimoor@gmail.com
