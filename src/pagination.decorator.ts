@@ -1,4 +1,4 @@
-import { createParamDecorator } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { ObjectLiteral } from 'typeorm';
 
 export interface PaginationParams {
@@ -9,7 +9,8 @@ export interface PaginationParams {
   _filter: ObjectLiteral;
 }
 
-export const PgParams = createParamDecorator((data, req): PaginationParams => {
+export const PgParams = createParamDecorator((data: unknown, context: ExecutionContext): PaginationParams => {
+  const req = context.switchToHttp().getRequest();
   const {
     _limit,
     _start,
