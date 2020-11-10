@@ -1,7 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntity, ObjectType, FindManyOptions, In, Equal } from 'typeorm';
+import { BaseEntity, ObjectType, FindManyOptions } from 'typeorm';
 import { PaginationParams } from './pagination.decorator';
 import { Pagination } from './pagination.interface';
+import { getFindOperator } from './utils/getFindOperator';
 
 export abstract class PaginateableBaseEntity extends BaseEntity {
   /**
@@ -49,11 +50,7 @@ export abstract class PaginateableBaseEntity extends BaseEntity {
       const filterQuery = {};
 
       toFilter.forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          filterQuery[key] = In(value);
-        } else {
-          filterQuery[key] = Equal(value);
-        }
+        filterQuery[key] = getFindOperator(value);
       });
 
       query = {
